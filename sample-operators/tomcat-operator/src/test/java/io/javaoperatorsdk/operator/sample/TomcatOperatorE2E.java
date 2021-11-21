@@ -71,7 +71,7 @@ public class TomcatOperatorE2E {
       log.info("Cleanup: deleting test namespace {}", TEST_NS);
       client.namespaces().delete(testNs);
       await().atMost(5, MINUTES)
-          .until(() -> client.namespaces().withName("tomcat-test").get() == null);
+          .until(() -> client.namespaces().withName(TEST_NS).get() == null);
     }
 
     log.info("Creating test namespace {}", TEST_NS);
