@@ -249,7 +249,7 @@ we could read the object again from Kubernetes API. However since we watch for t
 receive the most up-to-date version in the Event Source. So naturally, what we can do is cache the latest received
 objects (in the Event Source) and read it from there if needed.
 
-### Implementing and EventSource
+### Implementing an EventSource
 
 ### Built-in Event Sources
 
