@@ -79,6 +79,7 @@
         <module>smoke-test-samples</module>
         <module>micrometer-support</module>
         <module>sample-operators</module>
+        <module>managed-resources</module>
     </modules>
 
 
