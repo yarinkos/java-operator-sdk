@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 // todo unit tests
 import static io.javaoperatorsdk.operator.api.reconciler.Constants.OBJECT_MAPPER;
 
-public class ReconcileHelper {
+public class ReconcileUtils {
 
   public static BinaryOperator<? extends CustomResource> VOID_MAPPER =
       (oldValue, newValue) -> newValue;
@@ -66,8 +66,10 @@ public class ReconcileHelper {
                 dependentResource.setMetadata(new ObjectMeta());
             }
             var ownerReference = new OwnerReference();
+            ownerReference.setApiVersion(primaryResource.getApiVersion());
             ownerReference.setName(primaryResource.getMetadata().getName());
             ownerReference.setKind(primaryResource.getKind());
+            ownerReference.setController(false);
             dependentResource.getMetadata().getOwnerReferences().add(ownerReference);
             return () -> dependentResource;
           };
