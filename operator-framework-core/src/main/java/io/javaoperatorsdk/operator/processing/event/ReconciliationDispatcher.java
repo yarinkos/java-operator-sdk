@@ -297,13 +297,15 @@ class ReconciliationDispatcher<R extends HasMetadata> {
 
   private void updateCustomResourceWithFinalizer(R resource) {
     log.debug(
-        "Adding finalizer for resource: {} version: {}", getUID(resource), getVersion(resource));
+        "Adding finalizer for resource: {} version: {}", ResourceID.fromResource(resource),
+        getVersion(resource));
     resource.addFinalizer(configuration().getFinalizerName());
     customResourceFacade.replaceResourceWithLock(resource);
   }
 
   private R updateCustomResource(R resource) {
-    log.debug("Updating resource: {} with version: {}", getUID(resource), getVersion(resource));
+    log.debug("Updating resource: {} with version: {}", ResourceID.fromResource(resource),
+        getVersion(resource));
     log.trace("Resource before update: {}", resource);
     return customResourceFacade.replaceResourceWithLock(resource);
   }
@@ -311,7 +313,7 @@ class ReconciliationDispatcher<R extends HasMetadata> {
   private R removeFinalizer(R resource) {
     log.debug(
         "Removing finalizer on resource: {} with version: {}",
-        getUID(resource),
+        ResourceID.fromResource(resource),
         getVersion(resource));
     resource.removeFinalizer(configuration().getFinalizerName());
     return customResourceFacade.replaceResourceWithLock(resource);
