@@ -23,6 +23,6 @@ public class ObservedGenerationTestReconciler
     if (resource.getStatus() == null) {
       resource.setStatus(new ObservedGenerationTestCustomResourceStatus());
     }
-    return UpdateControl.patchStatus(resource);
+    return UpdateControl.patchResource(resource);
   }
 }

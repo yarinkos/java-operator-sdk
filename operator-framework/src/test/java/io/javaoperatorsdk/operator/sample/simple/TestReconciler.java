@@ -135,7 +135,7 @@ public class TestReconciler
       resource.getStatus().setConfigMapStatus("ConfigMap Ready");
     }
     if (patchStatus) {
-      return UpdateControl.patchStatus(resource);
+      return UpdateControl.patchResource(resource);
     } else {
       return UpdateControl.updateStatus(resource);
     }

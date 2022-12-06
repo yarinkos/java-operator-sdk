@@ -68,7 +68,7 @@ public class InformerEventSourceTestCustomReconciler
       resource.getStatus().setConfigMapValue(targetStatus);
     }
 
-    return UpdateControl.patchStatus(resource);
+    return UpdateControl.patchResource(resource);
   }
 
   public int getNumberOfExecutions() {

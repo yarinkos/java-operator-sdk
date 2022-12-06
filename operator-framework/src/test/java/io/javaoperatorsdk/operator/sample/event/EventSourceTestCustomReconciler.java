@@ -22,7 +22,7 @@ public class EventSourceTestCustomReconciler
     ensureStatusExists(resource);
     resource.getStatus().setState(EventSourceTestCustomResourceStatus.State.SUCCESS);
 
-    return UpdateControl.patchStatus(resource).rescheduleAfter(TIMER_PERIOD);
+    return UpdateControl.patchResource(resource).rescheduleAfter(TIMER_PERIOD);
   }
 
   private void ensureStatusExists(EventSourceTestCustomResource resource) {

@@ -50,7 +50,7 @@ public class ChangeNamespaceTestReconciler
     }
     var statusUpdates = primary.getStatus().getNumberOfStatusUpdates();
     primary.getStatus().setNumberOfStatusUpdates(statusUpdates + 1);
-    return UpdateControl.patchStatus(primary);
+    return UpdateControl.patchResource(primary);
   }
 
   private void increaseNumberOfResourceExecutions(ChangeNamespaceTestCustomResource primary) {

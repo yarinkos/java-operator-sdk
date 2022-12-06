@@ -19,8 +19,8 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
     }
     this.resource = resource;
     this.patchContext = patchContext;
-    this.updateResource = false;
-    this.updateStatus = true;
+    this.updateResource = true;
+    this.updateStatus = false;
     this.patch = true;
   }
 
@@ -64,13 +64,14 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
    * @param customResource the custom resource with target status
    * @return UpdateControl instance
    */
-  public static <T extends HasMetadata> UpdateControl<T> patchStatus(T customResource) {
+  public static <T extends HasMetadata> UpdateControl<T> patchResource(T customResource) {
     return new UpdateControl<>(customResource, true, false, true);
   }
 
-  public static <T extends HasMetadata> UpdateControl<T> patchStatus(T customResource,
+  // todo reconciliation dispatcher test?
+  public static <T extends HasMetadata> UpdateControl<T> patchResource(T customResource,
       PatchContext patchContext) {
-    return new UpdateControl<>(customResource, true, false, true);
+    return new UpdateControl<>(customResource, patchContext);
   }
 
   /**

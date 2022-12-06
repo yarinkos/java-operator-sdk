@@ -26,7 +26,7 @@ public class StatusPatchLockingReconciler
     }
     resource.getStatus().setMessage(resource.getSpec().isMessageInStatus() ? MESSAGE : null);
     resource.getStatus().setValue(resource.getStatus().getValue() + 1);
-    return UpdateControl.patchStatus(resource);
+    return UpdateControl.patchResource(resource);
   }
 
   public int getNumberOfExecutions() {

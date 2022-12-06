@@ -43,7 +43,7 @@ public class MySQLSchemaReconciler
       updateStatusPojo(schema, s, secret.getMetadata().getName(),
           decode(secret.getData().get(MYSQL_SECRET_USERNAME)));
       log.info("Schema {} created - updating CR status", s.getName());
-      return UpdateControl.patchStatus(schema);
+      return UpdateControl.patchResource(schema);
     }).orElseGet(UpdateControl::noUpdate);
   }
 

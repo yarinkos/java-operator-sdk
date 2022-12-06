@@ -26,7 +26,7 @@ public class ClusterScopedCustomResourceReconciler
 
     resource.setStatus(new ClusterScopedCustomResourceStatus());
     resource.getStatus().setCreated(true);
-    return UpdateControl.patchStatus(resource);
+    return UpdateControl.patchResource(resource);
   }
 
   private ConfigMap desired(ClusterScopedCustomResource resource) {

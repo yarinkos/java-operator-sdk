@@ -37,7 +37,7 @@ public class WorkflowAllFeatureReconciler
             context.managedDependentResourceContext()
                 .getWorkflowReconcileResult().orElseThrow()
                 .allDependentResourcesReady());
-    return UpdateControl.patchStatus(resource);
+    return UpdateControl.patchResource(resource);
   }
 
   public int getNumberOfReconciliationExecution() {
