@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
+import io.fabric8.kubernetes.client.dsl.base.PatchContext;
 import io.javaoperatorsdk.operator.OperatorException;
 import io.javaoperatorsdk.operator.api.ObservedGenerationAware;
 import io.javaoperatorsdk.operator.api.config.ConfigurationServiceProvider;
@@ -144,23 +145,24 @@ class ReconciliationDispatcher<P extends HasMetadata> {
           .setResourceVersion(updatedCustomResource.getMetadata().getResourceVersion());
       updatedCustomResource =
           updateStatusGenerationAware(updateControl.getResource(), originalResource,
-              updateControl.isPatch());
+              updateControl.isPatch(), updateControl.getPatchContext());
     } else if (updateControl.isUpdateStatus()) {
       updatedCustomResource =
           updateStatusGenerationAware(updateControl.getResource(), originalResource,
-              updateControl.isPatch());
+              updateControl.isPatch(), updateControl.getPatchContext());
     } else if (updateControl.isUpdateResource()) {
       updatedCustomResource =
           updateCustomResource(updateControl.getResource());
       if (shouldUpdateObservedGenerationAutomatically(updatedCustomResource)) {
         updatedCustomResource =
             updateStatusGenerationAware(updateControl.getResource(), originalResource,
-                updateControl.isPatch());
+                updateControl.isPatch(), updateControl.getPatchContext());
       }
     } else if (updateControl.isNoUpdate()
         && shouldUpdateObservedGenerationAutomatically(resourceForExecution)) {
       updatedCustomResource =
-          updateStatusGenerationAware(originalResource, originalResource, updateControl.isPatch());
+          updateStatusGenerationAware(originalResource, originalResource, updateControl.isPatch(),
+              updateControl.getPatchContext());
     }
     return createPostExecutionControl(updatedCustomResource, updateControl);
   }
@@ -215,10 +217,15 @@ class ReconciliationDispatcher<P extends HasMetadata> {
     return controller.getReconciler() instanceof ErrorStatusHandler;
   }
 
-  private P updateStatusGenerationAware(P resource, P originalResource, boolean patch) {
+  private P updateStatusGenerationAware(P resource, P originalResource, boolean patch,
+      PatchContext patchContext) {
     updateStatusObservedGenerationIfRequired(resource);
     if (patch) {
-      return customResourceFacade.patchStatus(resource, originalResource);
+      if (patchContext != null) {
+        return customResourceFacade.patchStatus(resource, originalResource, patchContext);
+      } else {
+        return customResourceFacade.patchStatus(resource, originalResource);
+      }
     } else {
       return customResourceFacade.updateStatus(resource);
     }
@@ -386,6 +393,10 @@ class ReconciliationDispatcher<P extends HasMetadata> {
       return resource(resource)
           .lockResourceVersion()
           .replaceStatus();
+    }
+
+    public R patchStatus(R resource, R originalResource, PatchContext patchContext) {
+      return resource(originalResource).patch(patchContext, resource);
     }
 
     public R patchStatus(R resource, R originalResource) {

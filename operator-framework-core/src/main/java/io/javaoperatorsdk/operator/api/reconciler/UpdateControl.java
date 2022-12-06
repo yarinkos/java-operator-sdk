@@ -2,6 +2,7 @@ package io.javaoperatorsdk.operator.api.reconciler;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.CustomResource;
+import io.fabric8.kubernetes.client.dsl.base.PatchContext;
 
 public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateControl<P>> {
 
@@ -9,6 +10,19 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
   private final boolean updateStatus;
   private final boolean updateResource;
   private final boolean patch;
+  private final PatchContext patchContext;
+
+
+  private UpdateControl(P resource, PatchContext patchContext) {
+    if (resource == null) {
+      throw new IllegalArgumentException("CustomResource cannot be null in case of patch");
+    }
+    this.resource = resource;
+    this.patchContext = patchContext;
+    this.updateResource = false;
+    this.updateStatus = true;
+    this.patch = true;
+  }
 
   private UpdateControl(
       P resource, boolean updateStatus, boolean updateResource, boolean patch) {
@@ -19,6 +33,7 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
     this.updateStatus = updateStatus;
     this.updateResource = updateResource;
     this.patch = patch;
+    this.patchContext = null;
   }
 
   /**
@@ -50,6 +65,11 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
    * @return UpdateControl instance
    */
   public static <T extends HasMetadata> UpdateControl<T> patchStatus(T customResource) {
+    return new UpdateControl<>(customResource, true, false, true);
+  }
+
+  public static <T extends HasMetadata> UpdateControl<T> patchStatus(T customResource,
+      PatchContext patchContext) {
     return new UpdateControl<>(customResource, true, false, true);
   }
 
@@ -94,6 +114,10 @@ public class UpdateControl<P extends HasMetadata> extends BaseControl<UpdateCont
 
   public P getResource() {
     return resource;
+  }
+
+  public PatchContext getPatchContext() {
+    return patchContext;
   }
 
   public boolean isUpdateStatus() {
