@@ -1,8 +1,14 @@
 package io.javaoperatorsdk.operator.sample;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
+import io.javaoperatorsdk.operator.api.config.informer.InformerConfiguration;
+import io.javaoperatorsdk.operator.processing.event.source.informer.InformerEventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +46,16 @@ public class WebPageStandaloneDependentsReconciler
 
   @Override
   public Map<String, EventSource> prepareEventSources(EventSourceContext<WebPage> context) {
-    return EventSourceInitializer.nameEventSourcesFromDependentResource(context, configMapDR,
-        deploymentDR, serviceDR, ingressDR);
+    var secretES = new InformerEventSource<>(InformerConfiguration.from(Secret.class,context).build(),context);
+    var podES = new InformerEventSource<>(InformerConfiguration.from(Pod.class,context).build(),context);
+    var jobES = new InformerEventSource<>(InformerConfiguration.from(Job.class,context).build(),context);
+
+    var res = new HashMap<String, EventSource>();
+    res.putAll(EventSourceInitializer.nameEventSourcesFromDependentResource(context, configMapDR,
+            deploymentDR, serviceDR, ingressDR));
+
+    res.putAll(EventSourceInitializer.nameEventSources(secretES,podES,jobES));
+    return res;
   }
 
   @Override

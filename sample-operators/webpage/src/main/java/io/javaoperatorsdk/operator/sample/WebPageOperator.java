@@ -3,6 +3,7 @@ package io.javaoperatorsdk.operator.sample;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import io.fabric8.kubernetes.client.ConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,9 @@ public class WebPageOperator {
   public static void main(String[] args) throws IOException {
     log.info("WebServer Operator starting!");
 
-    KubernetesClient client = new KubernetesClientBuilder().build();
+    KubernetesClient client = new KubernetesClientBuilder() .withConfig(new ConfigBuilder()
+            .withMaxConcurrentRequests(500).build())
+            .build();
     Operator operator = new Operator(client, o -> o.withStopOnInformerErrorDuringStartup(false));
     String reconcilerEnvVar = System.getenv(WEBPAGE_RECONCILER_ENV);
     if (WEBPAGE_CLASSIC_RECONCILER_ENV_VALUE.equals(reconcilerEnvVar)) {
@@ -31,10 +34,12 @@ public class WebPageOperator {
         .equals(reconcilerEnvVar)) {
       operator.register(new WebPageManagedDependentsReconciler());
     } else {
-      operator.register(new WebPageStandaloneDependentsReconciler(client));
+      operator.register(new WebPageStandaloneDependentsReconciler(client),o->
+        o.settingNamespaces("default","test1","test2","test3","test4","test5","test6","test7","test8","test9")
+      );
     }
     operator.start();
-
+    log.info("!!!!! STARTED !!!!!!");
     HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
     server.createContext("/startup", new StartupHandler(operator));
     // we want to restart the operator if something goes wrong with (maybe just some) event sources
