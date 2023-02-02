@@ -4,23 +4,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.batch.v1.Job;
-import io.javaoperatorsdk.operator.api.config.informer.InformerConfiguration;
-import io.javaoperatorsdk.operator.processing.event.source.informer.InformerEventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.api.model.ConfigMap;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.javaoperatorsdk.operator.api.config.informer.InformerConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependentResourceConfig;
 import io.javaoperatorsdk.operator.processing.event.source.EventSource;
+import io.javaoperatorsdk.operator.processing.event.source.informer.InformerEventSource;
 
 import static io.javaoperatorsdk.operator.sample.Utils.*;
 import static io.javaoperatorsdk.operator.sample.WebPageManagedDependentsReconciler.SELECTOR;
@@ -46,15 +46,18 @@ public class WebPageStandaloneDependentsReconciler
 
   @Override
   public Map<String, EventSource> prepareEventSources(EventSourceContext<WebPage> context) {
-    var secretES = new InformerEventSource<>(InformerConfiguration.from(Secret.class,context).build(),context);
-    var podES = new InformerEventSource<>(InformerConfiguration.from(Pod.class,context).build(),context);
-    var jobES = new InformerEventSource<>(InformerConfiguration.from(Job.class,context).build(),context);
+    var secretES = new InformerEventSource<>(
+        InformerConfiguration.from(Secret.class, context).build(), context);
+    var podES =
+        new InformerEventSource<>(InformerConfiguration.from(Pod.class, context).build(), context);
+    var jobES =
+        new InformerEventSource<>(InformerConfiguration.from(Job.class, context).build(), context);
 
     var res = new HashMap<String, EventSource>();
     res.putAll(EventSourceInitializer.nameEventSourcesFromDependentResource(context, configMapDR,
-            deploymentDR, serviceDR, ingressDR));
+        deploymentDR, serviceDR, ingressDR));
 
-    res.putAll(EventSourceInitializer.nameEventSources(secretES,podES,jobES));
+    res.putAll(EventSourceInitializer.nameEventSources(secretES, podES, jobES));
     return res;
   }
 
